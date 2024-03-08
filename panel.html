@@ -1,0 +1,41 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel</title>
+</head>
+<body>
+  <h1>Panel de datos en tiempo real</h1>
+  <ul id="lista-datos"></ul>
+
+  <!-- Agrega un botón para iniciar la reproducción del tono de alerta -->
+  <button id="botonPrueba">Reproducir Tono de Alerta</button>
+  <audio id="alertaSonora" src="sonidos/beep-01a.wav"></audio>
+
+  <script>
+    const listaDatos = document.getElementById('lista-datos');
+    const botonPrueba = document.getElementById('botonPrueba');
+    const alertaSonora = document.getElementById('alertaSonora');
+
+    const eventoSource = new EventSource('/panel');
+    eventoSource.onmessage = function(event) {
+      const data = JSON.parse(event.data);
+      if (data.tipo === 'ingreso') {
+        const listItem = document.createElement('li');
+        listItem.textContent = data.mensaje;
+        listaDatos.appendChild(listItem);
+        // Reproduce el tono de alerta cuando se recibe la alerta de ingreso
+        alertaSonora.play();
+      } else if (data.tipo === 'datos') {
+        const listItem = document.createElement('li');
+        listItem.textContent = `Nombre: ${data.datos.nombre}, Email: ${data.datos.email}`;
+        listaDatos.appendChild(listItem);
+      }
+    };
+
+    // Agrega un listener para iniciar la reproducción del tono de alerta cuando se hace cl>    botonPrueba.addEventListener('click', () => {
+      alertaSonora.play();
+    });
+  </script>
+</body>
+</html>
